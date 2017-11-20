@@ -1,0 +1,31 @@
+.request-brochure-wrapper .modal {
+  z-index: 99999;
+}
+
+.request-brochure-wrapper .brochure-title {
+  font-weight: bold !important;
+  text-align: center !important;
+}
+
+.request-brochure-wrapper .brochure-image {
+  margin: auto;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  background-position: center center;
+  background-size: cover;
+  height: 120px;
+  width: 103.5px;
+}
+
+.request-brochure-wrapper .form-group {
+  margin-bottom: 8px !important;
+}
+
+.request-brochure-wrapper .form-control {
+  height: 34px !important;
+}
+
+.request-brochure-wrapper .form-control-static {
+  padding-top: 7px !important;
+  padding-bottom: 7px !important;
+}
