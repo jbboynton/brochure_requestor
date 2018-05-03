@@ -1,0 +1,12 @@
+{
+  "name": "jbboynton/brochure_requestor",
+  "version" : "1.0.0",
+  "description": "WordPress plugin for requesting brochures.",
+  "type": "wordpress-plugin",
+  "authors": [
+    {
+      "name": "James Boynton",
+      "email": "james.boynton0@gmail.com"
+    }
+  ]
+}
