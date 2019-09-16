@@ -1,6 +1,6 @@
 {
   "name": "jbboynton/brochure_requestor",
-  "version" : "1.0.0",
+  "version" : "1.0.1",
   "description": "WordPress plugin for requesting brochures.",
   "type": "wordpress-plugin",
   "authors": [

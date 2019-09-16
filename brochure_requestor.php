@@ -13,7 +13,7 @@ defined ('ABSPATH') or die('Direct access not permitted.');
 function br_brochure_requestor_init() {
   define ('BROCHURES_PAGE', '4503');
 
-  if ($_POST['brochure_request_submitted']) {
+  if (isset($_POST['brochure_request_submitted']) && $_POST['brochure_request_submitted']) {
     if (br_verify_nonce()) {
       $args = br_build_message_fields();
       $content = br_generate_message_content($args);
