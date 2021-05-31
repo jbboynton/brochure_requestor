@@ -2,7 +2,7 @@
 /**
  * Plugin Name:    Brochure Requestor
  * Description:    Insert a brochure request form via a shortcode.
- * Version:        0.2
+ * Version:        1.3.0
  * Author:         James Boynton
  * Author URI:     #
  * Text Domain:    br
@@ -13,7 +13,7 @@ defined ('ABSPATH') or die('Direct access not permitted.');
 function br_brochure_requestor_init() {
   define ('BROCHURES_PAGE', '4503');
 
-  if ($_POST['brochure_request_submitted']) {
+  if (isset($_POST['brochure_request_submitted']) && $_POST['brochure_request_submitted']) {
     if (br_verify_nonce()) {
       $args = br_build_message_fields();
       $content = br_generate_message_content($args);
@@ -25,17 +25,17 @@ function br_brochure_requestor_init() {
 add_action('init', 'br_brochure_requestor_init');
 
 function br_build_message_fields() {
-  $request        = (isset($_POST['brochure_request'])) ? $_POST['brochure_request'] : array();
-  $title          = (isset($request['title'])) ? $request['title'] : '';
-  $name           = (isset($request['name'])) ? $request['name'] : '';
-  $email          = (isset($request['email'])) ? $request['email'] : '';
-  $company        = (isset($request['company'])) ? $request['company'] : '';
+  $request = (isset($_POST['brochure_request'])) ? $_POST['brochure_request'] : array();
+  $title = (isset($request['title'])) ? $request['title'] : '';
+  $name = (isset($request['name'])) ? $request['name'] : '';
+  $email = (isset($request['email'])) ? $request['email'] : '';
+  $company = (isset($request['company'])) ? $request['company'] : '';
   $address_line_1 = (isset($request['address_line_1'])) ? $request['address_line_1'] : '';
   $address_line_2 = (isset($request['address_line_2'])) ? $request['address_line_2'] : '';
-  $city           = (isset($request['city'])) ? $request['city'] : '';
-  $state          = (isset($request['state'])) ? $request['state'] : '';
-  $zip            = (isset($request['zip'])) ? $request['zip'] : '';
-  $country        = (isset($request['country'])) ? $request['country'] : '';
+  $city = (isset($request['city'])) ? $request['city'] : '';
+  $state = (isset($request['state'])) ? $request['state'] : '';
+  $zip = (isset($request['zip'])) ? $request['zip'] : '';
+  $country = (isset($request['country'])) ? $request['country'] : '';
 
   $fields = array(
     'title' => $title,
@@ -54,8 +54,13 @@ function br_build_message_fields() {
 }
 
 function br_send_pending_mail($body) {
-  $recipient = 'dev@xzito.com,info@hornermillwork.com';
-  $subject = 'New Brochure Request';
+  if (!empty(WP_ENV) && WP_ENV == 'development') {
+    $recipient = 'james@xzito.com';
+    $subject = '[TEST] New Brochure Request';
+  } else {
+    $recipient = 'info@hornermillwork.com';
+    $subject = 'New Brochure Request';
+  }
 
   wp_mail($recipient, $subject, $body);
   wp_safe_redirect($_SERVER['REQUEST_URI']);
@@ -65,18 +70,17 @@ function br_send_pending_mail($body) {
 
 function br_generate_message_content($fields) {
   $message = "New Brochure Request\n";
-  $message .= "--------------------\n";
   $message .= "\n";
-  $message .= "Brochure:         " .$fields["title"] ."\n";
-  $message .= "For:              " .$fields["name"] ."\n";
-  $message .= "Email:            " .$fields["email"] ."\n";
-  $message .= "Company:          " .$fields["company"] ."\n";
-  $message .= "Address Line 1:   " .$fields["address_line_1"] ."\n";
-  $message .= "Address Line 2:   " .$fields["address_line_2"] ."\n";
-  $message .= "City:             " .$fields["city"] ."\n";
-  $message .= "State:            " .$fields["state"] ."\n";
-  $message .= "Zip Code:         " .$fields["zip"] ."\n";
-  $message .= "Country:          " .$fields["country"] ."\n";
+  $message .= "Brochure: " .$fields["title"] ."\n";
+  $message .= "For: " .$fields["name"] ."\n";
+  $message .= "Email: " .$fields["email"] ."\n";
+  $message .= "Company: " .$fields["company"] ."\n";
+  $message .= "Address Line 1: " .$fields["address_line_1"] ."\n";
+  $message .= "Address Line 2: " .$fields["address_line_2"] ."\n";
+  $message .= "City: " .$fields["city"] ."\n";
+  $message .= "State: " .$fields["state"] ."\n";
+  $message .= "Zip Code: " .$fields["zip"] ."\n";
+  $message .= "Country: " .$fields["country"] ."\n";
   $message .= "\n";
 
   return $message;
@@ -148,7 +152,7 @@ function br_incremented_id() {
   return $counter;
 }
 
-function updateCounter($current_id) {
+function br_update_counter($current_id) {
   global $post;
 
   update_post_meta($post->ID, 'br_counter', ++$current_id);
@@ -160,7 +164,7 @@ function br_request_brochure_shortcode() {
     <a class="request-link" id="request-brochure-<?php echo br_incremented_id(); ?>" href="#" data-toggle="modal" data-target="#brochure-request-form-<?php echo br_incremented_id(); ?>">request</a>
 
     <!-- Modal -->
-    <div class="modal fade" id="brochure-request-form-<?php echo br_incremented_id(); ?>" tabindex="-1" role="dialog" aria-labelledby="brochure request form">
+    <div class="modal fade" data-backdrop="false" id="brochure-request-form-<?php echo br_incremented_id(); ?>" tabindex="-1" role="dialog" aria-labelledby="brochure request form">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <form class="form-horizontal" action="<?php the_permalink(); ?>" method="post">
@@ -173,7 +177,7 @@ function br_request_brochure_shortcode() {
               <div class="form-group">
                 <div class="col-sm-12">
                   <p class="form-control-static brochure-title" id="requested-brochure-name-<?php echo br_incremented_id(); ?>"></p>
-                  <input hidden type="text" id="requested-brochure-title-<?php echo br_incremented_id(); ?>" name="brochure_request[title]" value="">
+                  <input hidden type="text" id="requested-brochure-title-<?php echo br_incremented_id(); ?>" name="brochure_request[title]">
                 </div>
               </div>
               <div class="form-group">
@@ -247,7 +251,7 @@ function br_request_brochure_shortcode() {
     </div>
   </div>
   <?php
-  updateCounter(br_incremented_id());
+  br_update_counter(br_incremented_id());
 }
 add_shortcode('request_brochure', 'br_request_brochure_shortcode');
 
@@ -262,4 +266,5 @@ function br_verify_nonce() {
 
   return ($is_nonce_set && $is_nonce_verified);
 }
+
 

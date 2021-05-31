@@ -99,7 +99,7 @@
     );
     var titleElement = document.getElementById(correspondingTitle);
 
-    $(titleElement).val(brochureName);
+    $(titleElement).attr('value', brochureName);
   }
 
   function updateBrochureImage(modalTrigger, brochureImage) {
@@ -135,4 +135,3 @@
     });
   }
 })(jQuery);
-
